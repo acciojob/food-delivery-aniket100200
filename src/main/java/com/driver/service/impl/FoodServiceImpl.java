@@ -1,5 +1,6 @@
 package com.driver.service.impl;
 
+import com.driver.Transformers.FoodTransformer;
 import com.driver.Transformers.Transformer;
 import com.driver.io.entity.FoodEntity;
 import com.driver.io.repository.FoodRepository;
@@ -74,15 +75,12 @@ import java.util.Optional;
     }
 
     @Override
-    public List<FoodDto> getFoods() {
+    public List<FoodDto> getFoods()
+    {
         List<FoodDto>foodDtos=new ArrayList<>();
-        for(FoodEntity foodEntity: foodRepository.findAll()){
-            FoodDto foodDto=new FoodDto();
-            foodDto.setId(foodEntity.getId());
-            foodDto.setFoodId(foodEntity.getFoodId());
-            foodDto.setFoodCategory(foodEntity.getFoodCategory());
-            foodDto.setFoodName(foodEntity.getFoodName());
-            foodDto.setFoodPrice(foodEntity.getFoodPrice());
+        for(FoodEntity foodEntity: foodRepository.findAll())
+        {
+            FoodDto foodDto= Transformer.FoodEntityToFoodDto(foodEntity);
             foodDtos.add(foodDto);
         }
         return foodDtos;

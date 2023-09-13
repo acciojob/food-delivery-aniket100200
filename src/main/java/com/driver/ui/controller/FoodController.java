@@ -3,6 +3,7 @@ package com.driver.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.driver.Transformers.FoodTransformer;
 import com.driver.model.request.FoodDetailsRequestModel;
 import com.driver.model.response.FoodDetailsResponse;
 import com.driver.model.response.OperationStatusModel;
@@ -29,22 +30,17 @@ public class FoodController {
 	@PostMapping("/create")
 	public FoodDetailsResponse createFood(@RequestBody FoodDetailsRequestModel foodDetails)
 	{
-		FoodDto foodDto=new FoodDto();
-		foodDto.setFoodCategory(foodDetails.getFoodCategory());
-		foodDto.setFoodName(foodDetails.getFoodName());
-		foodDto.setFoodPrice(foodDetails.getFoodPrice());
-		foodDto = foodService.createFood(foodDto);
+		FoodDto foodDto= FoodTransformer.foodDtoFromFoodDetailRequestModel(foodDetails);
+		//just create the food.. here we go..
+
+			foodDto = foodService.createFood(foodDto);
 
 		ModelMapper modelMapper=new ModelMapper();
 
 		FoodDto foodDto1=modelMapper.map(foodDetails, FoodDto.class);
 
 
-		FoodDetailsResponse foodDetailsResponse=new FoodDetailsResponse();
-		foodDetailsResponse.setFoodId(foodDto.getFoodId());
-		foodDetailsResponse.setFoodPrice(foodDto.getFoodPrice());
-		foodDetailsResponse.setFoodName(foodDto.getFoodName());
-		foodDetailsResponse.setFoodCategory(foodDto.getFoodCategory());
+		FoodDetailsResponse foodDetailsResponse=FoodTransformer.foodDetailsResponseFromFoodDto(foodDto);
 		return foodDetailsResponse;
 	}
 
@@ -53,31 +49,20 @@ public class FoodController {
 	{
 		FoodDto foodDto= foodService.getFoodById(id);
 
-		FoodDetailsResponse foodDetailsResponse=new FoodDetailsResponse();
-
-		foodDetailsResponse.setFoodCategory(foodDto.getFoodCategory());
-		foodDetailsResponse.setFoodName(foodDto.getFoodName());
-		foodDetailsResponse.setFoodPrice(foodDto.getFoodPrice());
-		foodDetailsResponse.setFoodId(foodDto.getFoodId());
+		FoodDetailsResponse foodDetailsResponse=FoodTransformer.foodDetailsResponseFromFoodDto(foodDto);
 
 		return foodDetailsResponse;
 	}
 
 	@PutMapping(path="/{id}")
 	public FoodDetailsResponse updateFood(@PathVariable String id, @RequestBody FoodDetailsRequestModel foodDetails) throws Exception{
-		FoodDto foodDto=new FoodDto();
-		foodDto.setFoodCategory(foodDetails.getFoodCategory());
-		foodDto.setFoodName(foodDetails.getFoodName());
-		foodDto.setFoodPrice(foodDetails.getFoodPrice());
+
+		FoodDto foodDto=FoodTransformer.foodDtoFromFoodDetailRequestModel(foodDetails);
 
 		foodDto= foodService.updateFoodDetails(id,foodDto);
 
 
-		FoodDetailsResponse foodDetailsResponse=new FoodDetailsResponse();
-		foodDetailsResponse.setFoodId(foodDto.getFoodId());
-		foodDetailsResponse.setFoodPrice(foodDto.getFoodPrice());
-		foodDetailsResponse.setFoodName(foodDto.getFoodName());
-		foodDetailsResponse.setFoodCategory(foodDto.getFoodCategory());
+		FoodDetailsResponse foodDetailsResponse=FoodTransformer.foodDetailsResponseFromFoodDto(foodDto);
 		return foodDetailsResponse;
 	}
 

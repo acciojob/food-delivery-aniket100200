@@ -3,6 +3,7 @@ package com.driver.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.driver.Transformers.OrderTransformer;
 import com.driver.io.repository.OrderRepository;
 import com.driver.model.request.OrderDetailsRequestModel;
 import com.driver.model.response.OperationStatusModel;
@@ -28,19 +29,11 @@ public class OrderController {
 	@PostMapping()
 	public OrderDetailsResponse createOrder(@RequestBody OrderDetailsRequestModel order)
 	{
-		OrderDto orderDto=new OrderDto();
-		orderDto.setUserId(order.getUserId());
-		orderDto.setCost(order.getCost());
-		orderDto.setItems(order.getItems());
+		OrderDto orderDto= OrderTransformer.orderDtoFromOrderDetailRequestModel(order);
 
 		orderDto=orderService.createOrder(orderDto);
 
-		OrderDetailsResponse orderDetailsResponse=new OrderDetailsResponse();
-		orderDetailsResponse.setOrderId(orderDto.getOrderId());
-		orderDetailsResponse.setCost(orderDto.getCost());
-		orderDetailsResponse.setItems(orderDto.getItems());
-		orderDetailsResponse.setStatus(orderDto.isStatus());
-		orderDetailsResponse.setUserId(orderDto.getUserId());
+		OrderDetailsResponse orderDetailsResponse=OrderTransformer.orderDetailResponceFromOrderDto(orderDto);
 
 		return orderDetailsResponse;
 	}
@@ -51,12 +44,7 @@ public class OrderController {
 		try
 		{
 			OrderDto orderDto= orderService.getOrderById(id);
-			OrderDetailsResponse orderDetailsResponse=new OrderDetailsResponse();
-			orderDetailsResponse.setUserId(orderDto.getUserId());
-			orderDetailsResponse.setStatus(orderDto.isStatus());
-			orderDetailsResponse.setItems(orderDto.getItems());
-			orderDetailsResponse.setCost(orderDto.getCost());
-			orderDetailsResponse.setOrderId(orderDto.getOrderId());
+			OrderDetailsResponse orderDetailsResponse=OrderTransformer.orderDetailResponceFromOrderDto(orderDto);
 
 			return orderDetailsResponse;
 		}
@@ -68,20 +56,12 @@ public class OrderController {
 
 	@PutMapping(path="/{id}")
 	public OrderDetailsResponse updateOrder(@PathVariable String id, @RequestBody OrderDetailsRequestModel order) throws Exception{
-		OrderDto dto=new OrderDto();
-		dto.setCost(order.getCost());
-		dto.setUserId(order.getUserId());
-		dto.setItems(order.getItems());
+		OrderDto dto=OrderTransformer.orderDtoFromOrderDetailRequestModel(order);
 		try
 		{
 			dto=orderService.updateOrderDetails(id,dto);
 
-			OrderDetailsResponse response=new OrderDetailsResponse();
-			response.setOrderId(dto.getOrderId());
-			response.setCost(dto.getCost());
-			response.setStatus(dto.isStatus());
-			response.setItems(dto.getItems());
-			response.setUserId(dto.getUserId());
+			OrderDetailsResponse response=OrderTransformer.orderDetailResponceFromOrderDto(dto);
 			return response;
 		}
 		catch(Exception e)
@@ -118,12 +98,9 @@ public class OrderController {
 		List<OrderDetailsResponse>orderDetailsResponseList=new ArrayList<>();
 
 		for(OrderDto dto:dtoList){
-			OrderDetailsResponse orderDetailsResponse=new OrderDetailsResponse();
-			orderDetailsResponse.setUserId(dto.getUserId());
-			orderDetailsResponse.setItems(dto.getItems());
-			orderDetailsResponse.setStatus(dto.isStatus());
-			orderDetailsResponse.setOrderId(dto.getOrderId());
-			orderDetailsResponse.setCost(dto.getCost());
+			OrderDetailsResponse orderDetailsResponse=OrderTransformer.orderDetailResponceFromOrderDto(dto);
+
+			orderDetailsResponseList.add(orderDetailsResponse);
 		}
 		return orderDetailsResponseList;
 	}
