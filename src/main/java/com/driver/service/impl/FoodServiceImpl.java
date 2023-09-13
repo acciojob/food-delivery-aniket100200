@@ -63,10 +63,12 @@ import java.util.Optional;
     public void deleteFoodItem(String id) throws Exception
     {
         FoodEntity foodEntity= foodRepository.findByFoodId(id);
-        if(foodEntity==null)throw new Exception();
-        foodRepository.delete(foodEntity);
 
+        if(foodEntity==null)throw new Exception();
+         long foodEntityId=foodEntity.getId();
         //deleted successFully..
+        foodRepository.deleteById(foodEntityId);
+        //deleted successfuylly
     }
 
     @Override
