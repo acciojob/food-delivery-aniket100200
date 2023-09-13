@@ -1,5 +1,6 @@
 package com.driver.service.impl;
 
+import com.driver.Transformers.Transformer;
 import com.driver.io.entity.FoodEntity;
 import com.driver.io.repository.FoodRepository;
 import com.driver.service.FoodService;
@@ -17,16 +18,14 @@ import java.util.Optional;
     @Autowired
     private FoodRepository foodRepository;
     @Override
-    public FoodDto createFood(FoodDto food) {
-        FoodEntity foodEntity=new FoodEntity();
-        foodEntity.setFoodCategory(food.getFoodCategory());
-        foodEntity.setFoodName(food.getFoodName());
-        foodEntity.setFoodPrice(food.getFoodPrice());
+    public FoodDto createFood(FoodDto food)
+    {
+        FoodEntity foodEntity=Transformer.FoodDtoToFoodEntity(food);
 
         foodEntity=foodRepository.save(foodEntity);
 
-        food.setFoodId(foodEntity.getFoodId());
-        food.setId(foodEntity.getId());
+        //use of transformers..
+        food=Transformer.FoodEntityToFoodDto(foodEntity);
         return food;
     }
 
@@ -34,20 +33,23 @@ import java.util.Optional;
     public FoodDto getFoodById(String foodId) throws Exception
     {
         FoodEntity foodEntity= foodRepository.findByFoodId(foodId);
-        FoodDto foodDto=new FoodDto();
 
-        foodDto.setId(foodEntity.getId());
-        foodDto.setFoodPrice(foodEntity.getFoodPrice());
-        foodDto.setFoodName(foodDto.getFoodName());
-        foodDto.setFoodCategory(foodEntity.getFoodCategory());
-        foodDto.setFoodId(foodDto.getFoodId());
+
+        if(foodEntity==null)throw new Exception();
+
+        FoodDto foodDto= Transformer.FoodEntityToFoodDto(foodEntity);
+
         return foodDto;
     }
 
     @Override
     public FoodDto updateFoodDetails(String foodId, FoodDto foodDetails) throws Exception
     {
-        FoodEntity foodEntity=foodRepository.findByFoodId(foodId);
+        FoodEntity foodEntity=foodRepository.findById(foodDetails.getId()).get();
+
+        if(foodEntity==null)throw  new Exception();
+
+
         foodEntity.setFoodPrice(foodDetails.getFoodPrice());
         foodEntity.setFoodName(foodDetails.getFoodName());
         foodEntity.setFoodCategory(foodEntity.getFoodCategory());

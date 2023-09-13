@@ -3,6 +3,7 @@ package com.driver.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.driver.Transformers.Transformer;
 import com.driver.io.repository.UserRepository;
 import com.driver.model.request.UserDetailsRequestModel;
 import com.driver.model.response.OperationStatusModel;
@@ -30,10 +31,10 @@ private UserService userService;
 	{
 		UserDto userDto=userService.getUserByUserId(id);
 		UserResponse userResponse=new UserResponse();
-		userResponse.setUserId(userDto.getUserId());
-		userResponse.setEmail(userDto.getEmail());
-		userResponse.setFirstName(userDto.getFirstName());
-		userResponse.setLastName(userDto.getLastName());
+
+
+		//four attributes..
+		userResponse=	Transformer.userDtoToUserResponce(userDto);
 
 		return userResponse;
 	}
@@ -41,49 +42,36 @@ private UserService userService;
 	@PostMapping()
 	public UserResponse createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception
 	{
-		UserDto userDto=new UserDto();
-		userDto.setEmail(userDetails.getEmail());
-		userDto.setFirstName(userDetails.getFirstName());
-		userDto.setLastName(userDetails.getLastName());
+		UserDto userDto=Transformer.userDetailsRequestModelToUserDto(userDetails);
+
 		userDto.setUserId("test");
 
 		try
 		{
 			userDto = userService.createUser(userDto);
+			UserResponse userResponse = Transformer.userDtoToUserResponce(userDto);
+
+			return userResponse;
 		}
 
 		catch (Exception e)
 		{
 			System.out.println(e.getMessage());
+			return null;
 		}
-		UserResponse userResponse = new UserResponse();
-		userResponse.setUserId(userDto.getUserId());
-		userResponse.setFirstName(userDto.getFirstName());
-		userResponse.setLastName(userDto.getLastName());
-		userResponse.setEmail(userDto.getEmail());
 
-		return userResponse;
 	}
 
 	@PutMapping(path = "/{id}")
 	public UserResponse updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) throws Exception
 	{
-		UserDto userDto=new UserDto();
-		userDto.setEmail(userDetails.getEmail());
-		userDto.setLastName(userDetails.getLastName());
-		userDto.setFirstName(userDetails.getFirstName());
+		UserDto userDto=Transformer.userDetailsRequestModelToUserDto(userDetails);
 
 
 		userDto=userService.updateUser(id,userDto);
 
 		//Object Createiong for Response..
-		UserResponse userResponse=new UserResponse();
-
-		//setting all the values..
-		userResponse.setUserId(userDto.getUserId());
-		userResponse.setFirstName(userDto.getFirstName());
-		userResponse.setLastName(userDto.getLastName());
-		userResponse.setEmail(userDetails.getEmail());
+		UserResponse userResponse=Transformer.userDtoToUserResponce(userDto);
 		return userResponse;
 	}
 
@@ -104,14 +92,8 @@ private UserService userService;
 		List<UserResponse>userResponses=new ArrayList<>();
 		for(UserDto userDto:list)
 		{
-			UserResponse userResponse=new UserResponse();
-
-			userResponse.setEmail(userDto.getEmail());
-			userResponse.setUserId(userDto.getUserId());
-			userResponse.setLastName(userDto.getLastName());
-			userResponse.setFirstName(userDto.getFirstName());
+			UserResponse userResponse=Transformer.userDtoToUserResponce(userDto);
 			userResponses.add(userResponse);
-
 		}
 		return userResponses;
 	}
